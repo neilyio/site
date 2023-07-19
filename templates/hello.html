@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello Page</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Courier Prime', monospace;
+    }
+  </style>
+</head>
+
+<body class="my-12 mx-24">
+  <div class="border-b w-full border-gray-400 mb-2 flex justify-between items-baseline">
+    <h1 class="text-uppercase font-bold text-red-600 uppercase text-3xl">
+      {{ me.first_name }}
+      {{ me.last_name }}
+    </h1>
+    <span class="text-xl text-gray-400 font-light uppercase font-bold">{{ me.title }}</span>
+  </div>
+  <div class="text-sm text-gray-600 mb-6">
+    <h3>{{ me.phone }}</h3>
+    <h3>{{ me.email }}</h3>
+    <h3>{{ me.location}}</h3>
+  </div>
+  <div class="space-y-8">
+    <div>{% call about() %}</div>
+    <div>{% call experience() %}</div>
+    <div class="flex w-full space-x-4">
+      <div class="basis-0 grow">{% call education() %}</div>
+      <div class="basis-0 grow">{% call awards() %}</div>
+    </div>
+  </div>
+</body>
+
+</html>
+
+{% macro section_title(title) %}
+<h2 class="text-red-600 font-bold text-xl my-2 uppercase">
+  {{title}}
+</h2>
+<div>
+
+</div>
+{% endmacro %}
+
+{% macro about() %}
+{% call section_title("About Me") %}
+<div>
+  <p class="text-sm">{{ me.bio }}</p>
+</div>
+{% endmacro %}
+
+{% macro experience() %}
+{% call section_title("Experience") %}
+<ul class="space-y-4 text-sm">
+  {% for job in jobs %}
+  <li>
+    <div class="flex justify-between w-full border-b border-gray-500 mb-2">
+      <span>
+        <span class="text-gray-900 font-extrabold">
+          {{ job.company }}
+        </span>
+        <span class="text-blue-900">
+          {{ job.position}}
+        </span>
+      </span>
+      <div class="space-x-1">
+        <span class="text-gray-400 text-right">
+          {% for tech in job.tech %}
+          {{ tech }}
+          {% endfor %}
+        </span>
+        <span class="text-red-600 font-bold text-right w-full">
+          {{ job.year_span }}
+        </span>
+      </div>
+    </div>
+    <div>
+      <ul class="space-y-2">
+        {% for project in job.projects %}
+        <li>
+          <p>
+            <span>•</span>
+            {{project}}
+          </p>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro awards() %}
+{% call section_title("Awards") %}
+<ul class="space-y-4">
+  {% for award in awards %}
+  <li class="text-sm">
+    <div class="flex justify-between w-full border-b border-gray-500 mb-2">
+      <span class="text-gray-900 font-extrabold">
+        {{ award.title }}
+      </span>
+      <span class="text-orange-600 font-bold">
+        {{ award.subtitle }}
+      </span>
+    </div>
+    <div>
+      <p>{{ award.description }}</p>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}
+
+{% macro education () %}
+{% call section_title("Education") %}
+<ul class="space-y-4">
+  {% for ed in education %}
+  <li class="text-sm">
+    <div class="flex justify-between w-full border-b border-gray-500 mb-2">
+      <span class="text-gray-900 font-extrabold">
+        {{ ed.title}}
+      </span>
+      <span class="text-blue-900 font-bold">
+        {{ ed.time_span }}
+      </span>
+    </div>
+    <div>
+      {{ ed.description }}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% endmacro %}

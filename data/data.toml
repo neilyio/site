@@ -1,0 +1,84 @@
+[me]
+first_name = "Neil"
+last_name = "Hansen"
+phone = "310-845-5989"
+email = "neil.hansen.31@gmail.com"
+title = "Software Engineer"
+location = "Los Angeles, California"
+bio = "I love designing software that's intuitive on outside, and beautiful on the inside. Before I learned to program computers, I lived and worked in Canada as an award-winning filmmaker. In that world, I learned how to lead, to creatively solve problems, and to create experiences that delight an audience. Today, I blend that skillset with deep knowledge in functional programming, user interface architecture, and data-oriented design to help large and small companies create world-class software."
+
+[[jobs]]
+company = "Niantic Inc."  
+position = "Software Engineer"
+time_span = "Fall 2021 - Summer 2023"
+year_span = "2021 - 2023"
+tech = ["React", "Golang", "Swift", "iOS/Android", "Capacitor", "GCP", "GraphQL"]
+projects = [
+  "Boosted user acquisition, implementing a friend referral system that integrated with Pokemon Go and brought hundreds of thousands of new users to the Campfire social network.",
+  "Spearheaded a low-latency content moderation system, processing millions of images and messages while ensuring player safety through AI analysis and human review.",
+  "Created a novel rendering technique for UI tutorial which boosted retention in the hundreds of thousands of new users during the global launch of Campfire."
+]
+
+[[jobs]]
+company = "Fractal Inc."  
+position = "Software Engineer"
+time_span = "Winter 2020 - Summer 2021"
+year_span = "2020 - 2021"
+tech = ["TypeScript", "React", "Electron", "AWS", "Python", "Flask"]
+projects = [
+  "Led a team through a cycle of rapid development for the flagship desktop application, built in under two months, surpassing company expectations and enabling an early product launch."
+]
+
+[[jobs]]
+company = "Thr1ft Inc."  
+position = "Lead Software Engineer"
+time_span = "Winter 2019 - Winter 2020"
+year_span = "2019 - 2020"
+tech = ["Clojure", "ClojureScript", "React Native", "Swift"]
+projects = [
+  "Solo developed an iOS app prototype, responding quickly to changing requirements from customer testing, leading the company to secure seed investment.",
+  "Created a full-featured vintage clothing marketplace with integrated payment systems, user authentication, and inventory tracking."
+]
+
+[[jobs]]
+company = "Route Eleven Inc."  
+position = "Creative Director"
+time_span = "Spring 2016 - Fall 2019"
+year_span = "2016 - 2019"
+tech = ["Python", "Blender", "AWS", "Flask", "React"]
+projects = [
+  "Led a multi-disciplinary team in creating award-winning interactive media experiences, winning Canada's highest award for music videos.",
+  "Engineered an AWS-based cloud storage/transcoding product which soon became a flagship offering for the company."
+]
+
+[[awards]]
+title = "Niantic Hackathon"
+subtitle = "Audience Favorite"
+description = "Created a 3D, world-scale version of the Campfire social networking app using an efficient data streaming pattern."
+tech = ["Rust", "WebAssembly", "ThreeJS", "Swift", "TypeScript", "Blender"]
+
+[[awards]]
+title = "Juno Awards"
+subtitle = "Video of the Year 2017"
+description = "Awarded 'Video of the Year', Canada's highest video award, for creative and technical excellence in video."
+tech = ["Python", "Blender", "ActionScript", "Unreal Engine"]
+
+[[awards]]
+title = "Juno Awards"
+subtitle = "Video of the Year 2018"
+description = "Second win for 'Video of the Year' for cutting-edge visuals in an effects/animation driven film."
+tech = ["Python", "Blender", "C#", "Unity"]
+
+[[education]]
+title = "Ryerson University"
+subtitle = "Bachelor of Fine Arts"
+time_span = "Fall 2011 - Spring 2015"
+description = "Canada's top school for visual media and filmmaking. I specialized in photography and visual effects, and had a particular interest in post-production software. By graduation I had learned every one of the industry's major editing and visual effects suites."
+
+[[education]]
+title = "Computer Science and Programming"
+subtitle = "Self-Taught"
+time_span = "2017 - Forever"
+description = "I learned to code myself. It became my passion a few years after school, and I've taken since courses from MIT and Harvard. Of course, I learned the most by writing hundreds of programs. I love to learn, and I'm excited for my programming education to extend through the rest of my life."
+
+
