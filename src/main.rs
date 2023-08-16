@@ -5,6 +5,7 @@ mod utils;
 use axum::{http::Response, response::IntoResponse, routing::get, Router};
 use notify::{FsEventWatcher, Watcher};
 use std::path::Path;
+use tower_http::services::ServeDir;
 use tower_livereload::LiveReloadLayer;
 
 async fn style() -> impl IntoResponse {
@@ -44,7 +45,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // APP SETUP
     let app = Router::new()
         .route("/", get(pages::resume::response))
-        .route("/style.css", get(style));
+        .route("/htmx", get(pages::htmx::response))
+        .route("/style.css", get(style))
+        .nest_service("/assets", ServeDir::new("assets"));
 
     let reloader = Reloader::new();
     #[cfg(debug_assertions)]
