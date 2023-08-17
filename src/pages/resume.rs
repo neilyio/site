@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::utils;
 use askama::Template;
 use axum::{http::Response, response::IntoResponse};

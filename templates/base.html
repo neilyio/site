@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  {% block head %}{% endblock %}
+</head>
+
+<body class="my-12 mx-24">
+  {% block body %}{% endblock %}
+
+  <script src="/assets/htmx.min"></script>
+  <script src="/assets/hyperscript.min"></script>
+</body>
+
+</html>
