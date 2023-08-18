@@ -17,6 +17,11 @@
 
   <script src="/assets/htmx.min"></script>
   <script src="/assets/hyperscript.min"></script>
+  <script src="/assets/hyperscript.min"></script>
+  <script type="module">
+    import init, {greet} from "/wasm/pkg/wasm.js"
+    init().then(greet)
+  </script>
 </body>
 
 </html>

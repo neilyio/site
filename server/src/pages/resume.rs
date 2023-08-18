@@ -60,7 +60,7 @@ impl User {
 }
 
 pub async fn response() -> impl IntoResponse {
-    let config = utils::parse_toml::<ResumePage>("data/data.toml").unwrap();
+    let config = utils::parse_toml::<ResumePage>("server/data/data.toml").unwrap();
 
     let page = ResumePage {
         me: config.me,

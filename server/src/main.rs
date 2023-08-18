@@ -8,7 +8,7 @@ use tower_http::services::ServeDir;
 use tower_livereload::LiveReloadLayer;
 
 async fn style() -> impl IntoResponse {
-    let template_files = utils::get_files_in_dir("templates").unwrap();
+    let template_files = utils::get_files_in_dir("server/templates").unwrap();
 
     Response::builder()
         .header("content-type", "text/css")
@@ -36,7 +36,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/style.css", get(style))
         .layer(LiveReloadLayer::new())
         .nest("/api", api_router)
-        .nest_service("/assets", ServeDir::new("assets"))
+        .nest_service("/assets", ServeDir::new("server/assets"))
+        .nest_service("/wasm/pkg", ServeDir::new("wasm/pkg"))
         .with_state(state);
 
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
