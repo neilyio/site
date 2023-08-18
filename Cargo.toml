@@ -15,3 +15,4 @@ tower-livereload = "0.8.0"
 serde = "1.0.171"
 toml = "0.7.6"
 tower-http = { version = "0.4.3", features = ["fs"] }
+wasm-bindgen = "0.2.87"

@@ -2,6 +2,6 @@ run:
 	cargo run
 
 watch:
-	cargo watch -- cargo run
+	cargo watch -x run
 
 # Files are served at localhost:3000.
