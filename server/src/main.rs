@@ -30,9 +30,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // This is because you don't want the live reload code to be
     // sent back with the HTML fragments.
     let api_router = Router::new();
+    // let noc_router = Router::new();
     let app = Router::new()
         .route("/", get(pages::resume::response))
         .route("/resume", get(pages::resume::response))
+        .route("/noc", get(pages::noc::response))
         .route("/style.css", get(style))
         .layer(LiveReloadLayer::new())
         .nest("/api", api_router)

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %} Nature of Code {% endblock %}
+
+{% block head %}
+<script type="module">
+  import init from "/wasm/pkg/wasm.js"
+  init()
+</script>
+{% endblock %}
+
+{% block body %}
+<canvas id="myCanvas" width="500" height="500"></canvas>
+{% endblock %}

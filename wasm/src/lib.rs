@@ -1,13 +1,19 @@
+#![allow(dead_code, unused_imports)]
+mod ex;
+mod shapes;
 mod utils;
 
+use crate::shapes::Drawer;
+use js_sys::Object;
+use rand::{thread_rng, Rng};
+use std::{cell::RefCell, rc::Rc};
+use utils::canvas_context;
 use wasm_bindgen::prelude::*;
+use web_sys::{console, CanvasRenderingContext2d, HtmlCanvasElement};
 
-#[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
-}
+#[wasm_bindgen(start)]
+pub fn run() -> Result<(), JsValue> {
+    ex::intro::ex1("myCanvas")?;
 
-#[wasm_bindgen]
-pub fn greet() {
-    alert("Hello... from WebAssembly!");
+    Ok(())
 }
