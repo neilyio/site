@@ -13,7 +13,7 @@ use web_sys::{console, CanvasRenderingContext2d, HtmlCanvasElement};
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
-    ex::intro::ex1("myCanvas")?;
+    ex::intro::ex2("myCanvas")?;
 
     Ok(())
 }

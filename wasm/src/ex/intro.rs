@@ -50,3 +50,41 @@ pub fn ex1(canvas_id: &str) -> Result<(), JsValue> {
 
     Ok(())
 }
+
+pub fn ex2(canvas_id: &str) -> Result<(), JsValue> {
+    let ctx = canvas_context(canvas_id)?;
+    let width = ctx.canvas().unwrap().width();
+    let height = ctx.canvas().unwrap().width();
+    let mut numbers: [i32; 20] = [0; 20];
+    let mut rnd = thread_rng();
+
+    let bg = shapes::Background {
+        color: "honeydew".to_string(),
+    };
+
+    bg.draw(&ctx)?;
+    utils::raf_loop(move || {
+        // Increment a random number in the list.
+        let index = rnd.gen_range(0..numbers.len());
+        numbers[index] += 1;
+
+        let bar_width = width / numbers.len() as u32;
+
+        for (i, n) in numbers.iter().enumerate() {
+            let rect = shapes::Rectangle {
+                x: i as i32 * bar_width as i32,
+                y: height as i32,
+                width: bar_width as i32,
+                height: *n * -1,
+                color: "red".to_string(),
+                border_color: "black".to_string(),
+                border_width: 2,
+            };
+
+            rect.draw(&ctx)?;
+        }
+
+        Ok(())
+    });
+    Ok(())
+}
