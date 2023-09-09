@@ -17,13 +17,13 @@ pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     let height = ctx.canvas().unwrap().height();
     let mut rng = thread_rng();
 
-    let mut w = shapes::Dot {
-        x: width as i32 / 2,
-        y: height as i32 / 2,
-        radius: 1,
-        color: "red".to_string(),
-        opacity: 1.0,
-    };
+    let mut w = shapes::DotBuilder::default()
+        .x(width as i32 / 2)
+        .y(height as i32 / 2)
+        .radius(1)
+        .color("red")
+        .build()
+        .unwrap();
 
     let bg = shapes::Background {
         color: "honeydew".to_string(),
@@ -74,15 +74,16 @@ pub fn ex2(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
         let bar_width = width / numbers.len() as u32;
 
         for (i, n) in numbers.iter().enumerate() {
-            let rect = shapes::Rectangle {
-                x: i as i32 * bar_width as i32,
-                y: height as i32,
-                width: bar_width as i32,
-                height: *n * -1,
-                color: "red".to_string(),
-                border_color: "black".to_string(),
-                border_width: 2,
-            };
+            let rect = shapes::RectangleBuilder::default()
+                .x(i as i32 * bar_width as i32)
+                .y(height as i32)
+                .width(bar_width as i32)
+                .height(*n * -1)
+                .color("red")
+                .border_color("black")
+                .border_width(2)
+                .build()
+                .unwrap();
 
             rect.draw(&ctx)?;
         }
@@ -96,13 +97,13 @@ pub fn ex3(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
 
-    let mut w = shapes::Dot {
-        x: width as i32 / 2,
-        y: height as i32 / 2,
-        radius: 1,
-        color: "red".to_string(),
-        opacity: 1.0,
-    };
+    let mut w = shapes::DotBuilder::default()
+        .x(width as i32 / 2)
+        .y(height as i32 / 2)
+        .color("red")
+        .radius(1)
+        .build()
+        .unwrap();
 
     let bg = shapes::Background {
         color: "honeydew".to_string(),
@@ -152,13 +153,14 @@ pub fn ex4(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
         let mean = width as f64 / 2.0;
         let x = sd * num + mean;
 
-        let dot = shapes::Dot {
-            x: x as i32,
-            y: height as i32 / 2,
-            color: "red".to_string(),
-            radius: 10,
-            opacity: 0.05,
-        };
+        let dot = shapes::DotBuilder::default()
+            .x(x as i32)
+            .y(height as i32 / 2)
+            .color("red")
+            .radius(10)
+            .opacity(0.05)
+            .build()
+            .unwrap();
 
         dot.draw(&ctx)?;
 
@@ -189,13 +191,13 @@ pub fn ex5(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
         x = x + perlin.get([offset * scale, 0.0]) * amplitude;
         y = y + perlin.get([0.0, offset * scale]) * amplitude;
 
-        let dot = shapes::Dot {
-            x: x as i32,
-            y: y as i32,
-            color: "red".to_string(),
-            radius: 10,
-            opacity: 1.0,
-        };
+        let dot = shapes::DotBuilder::default()
+            .x(x as i32)
+            .y(y as i32)
+            .color("red")
+            .radius(10)
+            .build()
+            .unwrap();
 
         dot.draw(&ctx)?;
 
