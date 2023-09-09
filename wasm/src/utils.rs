@@ -4,7 +4,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use js_sys::Object;
 use wasm_bindgen::prelude::*;
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, HtmlElement};
 
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the

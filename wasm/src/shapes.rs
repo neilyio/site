@@ -10,6 +10,7 @@ pub struct Dot {
     pub y: i32,
     pub color: String,
     pub radius: i32,
+    pub opacity: f64,
 }
 
 impl Drawer for Dot {
@@ -29,8 +30,11 @@ impl Drawer for Dot {
             2.0 * std::f64::consts::PI,
         )?;
 
+        ctx.set_global_alpha(self.opacity);
         // Fill the circle
         ctx.fill();
+
+        ctx.set_global_alpha(1.0);
 
         Ok(())
     }

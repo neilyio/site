@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Router setup.
     // The order here matters.
     // with_state must come after the nested route declarations.
-    // layers only work on the routes declared before, so the
+    // Layers only work on the routes declared before, so the
     // live reload layer should be declared before the api router.
     // This is because you don't want the live reload code to be
     // sent back with the HTML fragments.
