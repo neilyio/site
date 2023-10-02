@@ -1,18 +1,21 @@
 use crate::shapes;
 use crate::shapes::Drawer;
 use crate::utils;
+use anyhow::Result;
 use js_sys::Object;
 use nalgebra::Vector4;
 use noise::{NoiseFn, Perlin};
 use rand::distributions::{Distribution, WeightedIndex};
 use rand::{thread_rng, Rng};
 use rand_distr::StandardNormal;
+use reqwest;
+use shared::noise::perlin_2d_array;
 use std::{cell::RefCell, rc::Rc};
 use utils::canvas_context;
 use wasm_bindgen::{prelude::*, Clamped};
 use web_sys::{console, CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
-pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
+pub async fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
     let mut rng = thread_rng();
@@ -29,7 +32,7 @@ pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
         color: "honeydew".to_string(),
     };
 
-    bg.draw(&ctx)?;
+    bg.draw(&ctx).unwrap();
     utils::raf_loop(move || {
         let d = 4;
 
@@ -55,7 +58,7 @@ pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn ex2(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
+pub async fn ex2(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().width();
     let mut numbers: [i32; 20] = [0; 20];
@@ -65,7 +68,7 @@ pub fn ex2(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
         color: "honeydew".to_string(),
     };
 
-    bg.draw(&ctx)?;
+    bg.draw(&ctx).unwrap();
     utils::raf_loop(move || {
         // Increment a random number in the list.
         let index = rnd.gen_range(0..numbers.len());
@@ -93,7 +96,7 @@ pub fn ex2(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn ex3(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
+pub async fn ex3(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
 
@@ -112,7 +115,7 @@ pub fn ex3(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     let mut rng = thread_rng();
     let dist = WeightedIndex::new([40, 20, 20, 20]).unwrap();
 
-    bg.draw(&ctx)?;
+    bg.draw(&ctx).unwrap();
     utils::raf_loop(move || {
         for _ in 0..10 {
             // To step in any direction, including diagonal:
@@ -135,7 +138,7 @@ pub fn ex3(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn ex4(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
+pub async fn ex4(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
 
@@ -145,7 +148,7 @@ pub fn ex4(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
 
     let mut rng = rand::thread_rng();
 
-    bg.draw(&ctx)?;
+    bg.draw(&ctx).unwrap();
 
     utils::raf_loop(move || {
         let num: f64 = rng.sample(StandardNormal);
@@ -170,7 +173,7 @@ pub fn ex4(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn ex5(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
+pub async fn ex5(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
     let perlin = Perlin::new(0);
@@ -208,48 +211,22 @@ pub fn ex5(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn ex6(ctx: CanvasRenderingContext2d) -> Result<(), JsValue> {
-    let width = ctx.canvas().unwrap().width();
-    let height = ctx.canvas().unwrap().height();
-    let perlin = Perlin::new(0);
+pub async fn ex6(ctx: CanvasRenderingContext2d) -> Result<()> {
+    let width = ctx.canvas().unwrap().width() as usize;
+    let height = ctx.canvas().unwrap().height() as usize;
 
-    // Retrieve the existing ImageData or create a new one
-    let image_data = ctx
-        .create_image_data_with_sw_and_sh(width as f64, height as f64)
-        .unwrap();
-
-    let mut data = image_data.data();
-
-    let foreground = Vector4::new(255.0, 0.0, 0.0, 255.0);
-    let background = Vector4::new(240.0, 255.0, 240.0, 255.0);
-    let octaves: usize = 6;
-
-    // Loop through the pixels and adjust their colors based on Perlin noise
-    for x in 0..width {
-        for y in 0..height {
-            let mut noise_val = 0.0;
-            let mut scale = 0.02;
-            let mut amplitude = 1.0;
-            for _ in 0..octaves {
-                noise_val += perlin.get([x as f64 * scale, y as f64 * scale]) * amplitude;
-                scale *= 2.0; // Double the frequency for the next octave
-                amplitude *= 0.5; // Halve the amplitude for the next octave
-            }
-
-            let normalized = (noise_val + 1.0) / 2.0;
-
-            let color = foreground.lerp(&background, normalized);
-            let index = (4 * (y * width + x)) as usize;
-
-            data[index] = color.x as u8; // R
-            data[index + 1] = color.y as u8; // G
-            data[index + 2] = color.z as u8; // B
-            data[index + 3] = color.w as u8; // A (fully opaque)
-        }
-    }
+    // Fetching data from /perlin2d
+    let url = format!(
+        "http://localhost:3000/api/perlin2d?width={}&height={}",
+        width, height
+    );
+    let response = reqwest::get(&url).await?;
+    let data: Vec<u8> = response.bytes().await?.to_vec();
 
     // Put the modified ImageData back onto the canvas
-    let new_image = ImageData::new_with_u8_clamped_array_and_sh(Clamped(&data), width, height)?;
+    let new_image =
+        ImageData::new_with_u8_clamped_array_and_sh(Clamped(&data), width as u32, height as u32)
+            .unwrap();
     ctx.put_image_data(&new_image, 0.0, 0.0).unwrap();
 
     Ok(())

@@ -29,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // live reload layer should be declared before the api router.
     // This is because you don't want the live reload code to be
     // sent back with the HTML fragments.
-    let api_router = Router::new();
+    let api_router = Router::new().route("/perlin2d", get(pages::noc::perlin2d));
     // let noc_router = Router::new();
     let app = Router::new()
         .route("/", get(pages::resume::response))

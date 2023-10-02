@@ -1,28 +1,40 @@
-use derive_builder::Builder;
-use wasm_bindgen::JsValue;
+use crate::renderer::shapes::*;
+use crate::renderer::{Drawable, Renderer};
+use std::rc::Rc;
+use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
-pub trait Drawer<T> {
-    type Result;
-
-    fn draw(&self, ctx: T) -> Self::Result;
+pub struct CanvasRenderer {
+    pub ctx: Rc<CanvasRenderingContext2d>,
 }
 
-#[derive(Builder, Default)]
-pub struct Dot {
-    pub x: i32,
-    pub y: i32,
-    #[builder(setter(into))]
-    pub color: String,
-    pub radius: i32,
-    #[builder(default = "1.0")]
-    pub opacity: f64,
+impl CanvasRenderer {
+    pub fn new(ctx: CanvasRenderingContext2d) -> Self {
+        Self { ctx: Rc::new(ctx) }
+    }
 }
 
-impl Drawer<&CanvasRenderingContext2d> for Dot {
+impl Renderer for CanvasRenderer {
     type Result = Result<(), JsValue>;
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) -> Self::Result {
+    fn draw(&self, drawable: &dyn Drawable<Self, Result = Self::Result>) -> Self::Result {
+        drawable.draw(&self)
+    }
+
+    fn width(&self) -> u32 {
+        self.ctx.canvas().unwrap().width()
+    }
+
+    fn height(&self) -> u32 {
+        self.ctx.canvas().unwrap().height()
+    }
+}
+
+impl Drawable<CanvasRenderer> for Dot {
+    type Result = Result<(), JsValue>;
+
+    fn draw(&self, renderer: &CanvasRenderer) -> Self::Result {
+        let ctx = &renderer.ctx;
         // Set the fill color
         ctx.set_fill_style(&self.color.clone().into());
 
@@ -47,16 +59,11 @@ impl Drawer<&CanvasRenderingContext2d> for Dot {
         Ok(())
     }
 }
-
-#[derive(Builder)]
-pub struct Background {
-    pub color: String,
-}
-
-impl Drawer<&CanvasRenderingContext2d> for Background {
+impl Drawable<CanvasRenderer> for Background {
     type Result = Result<(), JsValue>;
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) -> Self::Result {
+    fn draw(&self, renderer: &CanvasRenderer) -> Self::Result {
+        let ctx = &renderer.ctx;
         let width = ctx.canvas().unwrap().width() as f64;
         let height = ctx.canvas().unwrap().height() as f64;
 
@@ -67,24 +74,12 @@ impl Drawer<&CanvasRenderingContext2d> for Background {
         Ok(())
     }
 }
-
-#[derive(Builder, Default)]
-pub struct Rectangle {
-    pub x: i32,
-    pub y: i32,
-    pub width: i32,
-    pub height: i32,
-    pub border_width: i32,
-    #[builder(setter(into))]
-    pub color: String,
-    #[builder(setter(into))]
-    pub border_color: String,
-}
-
-impl Drawer<&CanvasRenderingContext2d> for Rectangle {
+impl Drawable<CanvasRenderer> for Rectangle {
     type Result = Result<(), JsValue>;
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) -> Self::Result {
+    fn draw(&self, renderer: &CanvasRenderer) -> Self::Result {
+        let ctx = &renderer.ctx;
+
         ctx.set_fill_style(&self.color.clone().into());
         ctx.fill_rect(
             self.x as f64,
