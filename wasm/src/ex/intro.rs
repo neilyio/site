@@ -13,9 +13,10 @@ use shared::noise::perlin_2d_array;
 use std::{cell::RefCell, rc::Rc};
 use utils::canvas_context;
 use wasm_bindgen::{prelude::*, Clamped};
+use wasm_bindgen_futures::spawn_local;
 use web_sys::{console, CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
-pub async fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
     let mut rng = thread_rng();
@@ -58,7 +59,7 @@ pub async fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
     Ok(())
 }
 
-pub async fn ex2(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex2(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().width();
     let mut numbers: [i32; 20] = [0; 20];
@@ -96,7 +97,7 @@ pub async fn ex2(ctx: CanvasRenderingContext2d) -> Result<()> {
     Ok(())
 }
 
-pub async fn ex3(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex3(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
 
@@ -138,7 +139,7 @@ pub async fn ex3(ctx: CanvasRenderingContext2d) -> Result<()> {
     Ok(())
 }
 
-pub async fn ex4(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex4(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
 
@@ -173,7 +174,7 @@ pub async fn ex4(ctx: CanvasRenderingContext2d) -> Result<()> {
     Ok(())
 }
 
-pub async fn ex5(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex5(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width();
     let height = ctx.canvas().unwrap().height();
     let perlin = Perlin::new(0);
@@ -211,23 +212,28 @@ pub async fn ex5(ctx: CanvasRenderingContext2d) -> Result<()> {
     Ok(())
 }
 
-pub async fn ex6(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex6(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().width() as usize;
     let height = ctx.canvas().unwrap().height() as usize;
 
-    // Fetching data from /perlin2d
-    let url = format!(
-        "http://localhost:3000/api/perlin2d?width={}&height={}",
-        width, height
-    );
-    let response = reqwest::get(&url).await?;
-    let data: Vec<u8> = response.bytes().await?.to_vec();
+    spawn_local(async move {
+        // Fetching data from /perlin2d
+        let url = format!(
+            "http://localhost:3000/api/perlin2d?width={}&height={}",
+            width, height
+        );
+        let response = reqwest::get(&url).await.unwrap();
+        let data: Vec<u8> = response.bytes().await.unwrap().to_vec();
 
-    // Put the modified ImageData back onto the canvas
-    let new_image =
-        ImageData::new_with_u8_clamped_array_and_sh(Clamped(&data), width as u32, height as u32)
-            .unwrap();
-    ctx.put_image_data(&new_image, 0.0, 0.0).unwrap();
+        // Put the modified ImageData back onto the canvas
+        let new_image = ImageData::new_with_u8_clamped_array_and_sh(
+            Clamped(&data),
+            width as u32,
+            height as u32,
+        )
+        .unwrap();
+        ctx.put_image_data(&new_image, 0.0, 0.0).unwrap();
+    });
 
     Ok(())
 }

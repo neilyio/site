@@ -6,7 +6,7 @@ use anyhow::Result;
 use wasm_bindgen::{prelude::*, Clamped};
 use web_sys::CanvasRenderingContext2d;
 
-pub async fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
+pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
     let width = ctx.canvas().unwrap().height();
     let height = ctx.canvas().unwrap().width();
 
