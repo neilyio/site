@@ -1,7 +1,10 @@
+set shell := ["fish", "-c"]
+
 # Files are served at localhost:3000.
 
 # mode is '--dev' or '--release'.
 wasm mode:
+	#!/usr/bin/env fish
 	wasm-pack --log-level warn build {{mode}} --target web ./wasm 	
 
 build: (wasm "--dev")
@@ -11,6 +14,7 @@ build-release: (wasm "--release")
 	cargo build
 
 run: (wasm "--dev")
+	#!/usr/bin/env fish
 	cargo run
 
 run-notify: build notify-done

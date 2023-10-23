@@ -1,47 +1,70 @@
 use crate::{
     shapes::{self, Drawer},
-    utils::{self, canvas_context},
+    sketch::{Render, Sketch},
 };
-use anyhow::Result;
-use wasm_bindgen::{prelude::*, Clamped};
 use web_sys::CanvasRenderingContext2d;
 
-pub fn ex1(ctx: CanvasRenderingContext2d) -> Result<()> {
-    let width = ctx.canvas().unwrap().height();
-    let height = ctx.canvas().unwrap().width();
+pub struct Ex1 {
+    width: usize,
+    height: usize,
+    xspeed: f32,
+    yspeed: f32,
+    ball: shapes::Dot,
+    background: shapes::Background,
+}
 
-    let mut ball = shapes::Dot {
-        x: width as i32 / 2,
-        y: height as i32 / 2,
-        radius: 32,
-        color: "red".to_string(),
-        opacity: 1.0,
-    };
+impl Render for Ex1 {}
+impl Sketch<CanvasRenderingContext2d> for Ex1 {
+    async fn setup(ctx: &CanvasRenderingContext2d) -> std::result::Result<Self, anyhow::Error> {
+        let width = ctx.canvas().unwrap().height() as usize;
+        let height = ctx.canvas().unwrap().width() as usize;
 
-    let bg = shapes::Background {
-        color: "honeydew".to_string(),
-    };
+        let ball = shapes::Dot {
+            x: width as i32 / 2,
+            y: height as i32 / 2,
+            radius: 32,
+            color: "red".to_string(),
+            opacity: 1.0,
+        };
 
-    let mut x_speed = 10.0;
-    let mut y_speed = 15.0;
+        let background = shapes::Background {
+            color: "honeydew".to_string(),
+        };
 
-    utils::raf_loop(move || {
-        ball.x += x_speed as i32;
-        ball.y += y_speed as i32;
+        let xspeed = 10.0;
+        let yspeed = 15.0;
 
-        if ball.x < 0 || ball.x > width as i32 {
-            x_speed *= -1.0
+        background.draw(&ctx).unwrap();
+        ball.draw(&ctx).unwrap();
+
+        Ok(Self {
+            width,
+            height,
+            xspeed,
+            yspeed,
+            ball,
+            background,
+        })
+    }
+
+    async fn cycle(
+        &mut self,
+        ctx: &CanvasRenderingContext2d,
+    ) -> std::result::Result<bool, anyhow::Error> {
+        self.ball.x += self.xspeed as i32;
+        self.ball.y += self.yspeed as i32;
+
+        if self.ball.x < 0 || self.ball.x > self.width as i32 {
+            self.xspeed *= -1.0
         }
 
-        if ball.y < 0 || ball.y > height as i32 {
-            y_speed *= -1.0
+        if self.ball.y < 0 || self.ball.y > self.height as i32 {
+            self.yspeed *= -1.0
         }
 
-        bg.draw(&ctx)?;
-        ball.draw(&ctx)?;
+        self.background.draw(&ctx).unwrap();
+        self.ball.draw(&ctx).unwrap();
 
-        Ok(())
-    });
-
-    Ok(())
+        Ok(true)
+    }
 }
