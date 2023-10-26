@@ -3,12 +3,13 @@ mod state;
 mod utils;
 
 use axum::{http::Response, response::IntoResponse, routing::get, Router};
+use shared::config::{WASM_DIR_ENDPOINT, WASM_TARGET_DIR_PATH};
 use std::sync::{Arc, Mutex};
 use tower_http::services::ServeDir;
 use tower_livereload::LiveReloadLayer;
 
 async fn style() -> impl IntoResponse {
-    let template_files = utils::get_files_in_dir("server/templates").unwrap();
+    let template_files = utils::get_files_in_dir("shared/templates").unwrap();
 
     Response::builder()
         .header("content-type", "text/css")
@@ -30,7 +31,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // This is because you don't want the live reload code to be
     // sent back with the HTML fragments.
     let api_router = Router::new().route("/perlin2d", get(pages::noc::perlin2d));
-    // let noc_router = Router::new();
     let app = Router::new()
         .route("/", get(pages::resume::response))
         .route("/resume", get(pages::resume::response))
@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(LiveReloadLayer::new())
         .nest("/api", api_router)
         .nest_service("/assets", ServeDir::new("server/assets"))
-        .nest_service("/wasm/pkg", ServeDir::new("wasm/pkg"))
+        .nest_service(WASM_DIR_ENDPOINT, ServeDir::new(WASM_TARGET_DIR_PATH))
         .with_state(state);
 
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())

@@ -1,11 +1,15 @@
+cargo-features = ["per-package-target"]
+
 [package]
 name = "wasm"
 version = "0.1.0"
 authors = ["neilhansen"]
 edition = "2018"
+forced-target = "wasm32-unknown-unknown"
+
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
 
 [features]
 default = ["console_error_panic_hook"]
@@ -19,6 +23,15 @@ wasm-bindgen = "0.2.84"
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.7", optional = true }
 web-sys = { version = "0.3.64", features = [
+  "AbortController",
+  "AbortSignal",
+  "RequestCredentials",
+  "RequestInit",
+  "Headers",
+  "Request",
+  "RequestMode",
+  "Response",
+  "ServiceWorkerGlobalScope",
   "CanvasRenderingContext2d",
   "HtmlCanvasElement",
   "Window",
@@ -42,6 +55,7 @@ anyhow = "1.0.75"
 wasm-bindgen-futures = "0.4.37"
 futures = "0.3.28"
 once_cell = "1.18.0"
+serde-wasm-bindgen = "0.6.1"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"

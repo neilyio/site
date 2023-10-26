@@ -49,9 +49,9 @@ checksum = "96d30a06541fbafbc7f82ed10c06164cfbd2c401138f6addd8404629c4b16711"
 
 [[package]]
 name = "askama"
-version = "0.12.0"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47cbc3cf73fa8d9833727bbee4835ba5c421a0d65b72daf9a7b5d0e0f9cfb57e"
+checksum = "b79091df18a97caea757e28cd2d5fda49c6cd4bd01ddffd7ff01ace0c0ad2c28"
 dependencies = [
  "askama_derive",
  "askama_escape",
@@ -1621,18 +1621,29 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.188"
+version = "1.0.190"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf9e0fcba69a370eed61bcf2b728575f726b50b55cba78064753d708ddc7549e"
+checksum = "91d3c334ca1ee894a2c6f6ad698fe8c435b76d504b13d436f0685d648d6d96f7"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
-name = "serde_derive"
-version = "1.0.188"
+name = "serde-wasm-bindgen"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4eca7ac642d82aa35b60049a6eccb4be6be75e599bd2e9adb5f875a737654af2"
+checksum = "17ba92964781421b6cef36bf0d7da26d201e96d84e1b10e7ae6ed416e516906d"
+dependencies = [
+ "js-sys",
+ "serde",
+ "wasm-bindgen",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.190"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67c5609f394e5c2bd7fc51efda478004ea80ef42fee983d5c67a65e34f32c0e3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1692,14 +1703,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "server"
+version = "0.1.0"
+dependencies = [
+ "askama",
+ "axum",
+ "hyper",
+ "nalgebra",
+ "notify",
+ "railwind",
+ "serde",
+ "shared",
+ "tokio",
+ "toml",
+ "tower-http",
+ "tower-livereload",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "shared"
 version = "0.1.0"
 dependencies = [
+ "askama",
  "derive_builder",
  "js-sys",
  "nalgebra",
  "noise",
  "rand 0.8.5",
+ "serde",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -1724,25 +1756,6 @@ dependencies = [
  "num-traits",
  "paste",
  "wide",
-]
-
-[[package]]
-name = "site-server"
-version = "0.1.0"
-dependencies = [
- "askama",
- "axum",
- "hyper",
- "nalgebra",
- "notify",
- "railwind",
- "serde",
- "shared",
- "tokio",
- "toml",
- "tower-http",
- "tower-livereload",
- "wasm-bindgen",
 ]
 
 [[package]]
@@ -2165,6 +2178,7 @@ dependencies = [
  "rand_distr",
  "rapier2d",
  "reqwest",
+ "serde-wasm-bindgen",
  "serde_json",
  "shared",
  "wasm-bindgen",

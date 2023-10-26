@@ -5,8 +5,8 @@
 {% block head %}
 
 <script type="module">
-  import init, {run} from "/wasm/pkg/wasm.js"
-  init().then(() => run(`{{ filter_ids|json|safe }}`))
+  import init, {run} from "{{ crate::config::WASM_JS_ENDPOINT }}"
+  init().then(() => run(JSON.parse(`{{ self|json|safe }}`)))
 </script>
 {% endblock %}
 

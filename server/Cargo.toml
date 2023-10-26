@@ -1,12 +1,11 @@
 [package]
-name = "site-server"
+name = "server"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-askama = { version = "0.12.0", features = ["serde-json"] }
 axum = { version = "0.6.18", features = ["tokio"] }
 railwind = "0.1.5"
 tokio = { version = "1.29.1", features = ["full"] }
@@ -19,3 +18,4 @@ wasm-bindgen = "0.2.87"
 shared = { version = "0.1.0", path = "../shared" }
 nalgebra = "0.32.3"
 hyper = "0.14.27"
+askama = { version = "0.12.1", features = ["serde-json"] }

@@ -1,23 +1,14 @@
-use askama::Template;
 use axum::{extract::Query, http::Response, response::IntoResponse};
 use hyper::Body;
 use nalgebra::Vector4;
 use serde::{Deserialize, Serialize};
 use shared::noise::perlin_2d_array;
-
-#[allow(dead_code)]
-#[derive(Deserialize, Template)]
-#[template(path = "noc.html")]
-pub struct NocPage {
-    filter_ids: Vec<String>,
-}
+use shared::pages::{noc, Template};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Params {
     f: Option<String>,
 }
-
-const ALL_IDS: &[&str] = &["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "1.1"];
 
 pub async fn response(Query(Params { f }): Query<Params>) -> impl IntoResponse {
     let ex_str = f.unwrap_or_default();
@@ -27,9 +18,9 @@ pub async fn response(Query(Params { f }): Query<Params>) -> impl IntoResponse {
         .filter(|s| !s.is_empty())
         .map(|s| s.to_string())
         .collect();
-    let all_ids: Vec<String> = ALL_IDS.iter().map(|s| s.to_string()).collect();
+    let all_ids: Vec<String> = noc::EXERCISE_IDS.iter().map(|s| s.to_string()).collect();
 
-    let page = NocPage {
+    let page = noc::Data {
         filter_ids: if filter_ids.is_empty() {
             all_ids
         } else {

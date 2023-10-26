@@ -10,9 +10,9 @@ use crate::ex::vectors;
 use crate::sketch::Render;
 use crate::utils::canvas_context;
 use anyhow::Result;
-use console_error_panic_hook;
 use once_cell::sync::Lazy;
-use serde_json;
+use serde_wasm_bindgen;
+use shared::pages::noc;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
@@ -32,14 +32,16 @@ static RENDER: Lazy<Vec<(&'static str, RenderFn)>> = Lazy::new(|| {
 
 #[allow(dead_code, unused_variables)]
 #[wasm_bindgen]
-pub fn run(filter_ids: String) -> Result<(), JsError> {
+pub fn run(wasm_data: JsValue) -> Result<(), JsError> {
     console_error_panic_hook::set_once();
+    let data: noc::Data =
+        serde_wasm_bindgen::from_value(wasm_data).expect("Couldn't deserialize wasm_data.");
 
-    let ids: Vec<String> = serde_json::from_str(&filter_ids)?;
+    let filter_ids = data.filter_ids;
     let render_map: HashMap<String, RenderFn> =
         RENDER.iter().map(|&(id, rf)| (id.to_owned(), rf)).collect();
 
-    for id in ids {
+    for id in filter_ids {
         match (render_map.get(&id), canvas_context(&id)) {
             (Some(render_fn), Ok(ctx)) => render_fn(ctx).unwrap(),
             _ => {}
