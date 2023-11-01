@@ -1,36 +1,49 @@
+use askama::Template;
 use axum::{extract::Query, http::Response, response::IntoResponse};
 use hyper::Body;
 use nalgebra::Vector4;
 use serde::{Deserialize, Serialize};
-use shared::noise::perlin_2d_array;
-use shared::pages::{noc, Template};
+use shared::{noc::ExerciseIds, noise::perlin_2d_array};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Deserialize)]
 pub struct Params {
     f: Option<String>,
 }
 
-pub async fn response(Query(Params { f }): Query<Params>) -> impl IntoResponse {
-    let ex_str = f.unwrap_or_default();
-    let filter_ids: Vec<String> = ex_str
-        .trim_matches(',')
-        .split(",")
-        .filter(|s| !s.is_empty())
-        .map(|s| s.to_string())
-        .collect();
-    let all_ids: Vec<String> = noc::EXERCISE_IDS.iter().map(|s| s.to_string()).collect();
+#[derive(Serialize, Deserialize, Template)]
+#[template(path = "noc.html")]
+pub struct Page {
+    pub exercise_ids: ExerciseIds,
+    pub js_path: String,
+}
 
-    let page = noc::Data {
-        filter_ids: if filter_ids.is_empty() {
-            all_ids
+impl From<Params> for Page {
+    fn from(params: Params) -> Self {
+        let ex_str = params.f.unwrap_or_default();
+        let filter_ids: Vec<String> = ex_str
+            .trim_matches(',')
+            .split(",")
+            .filter(|s| !s.is_empty())
+            .map(|s| s.to_string())
+            .collect();
+
+        let exercise_ids = if filter_ids.is_empty() {
+            ExerciseIds::default()
         } else {
-            filter_ids
-        },
-    };
+            ExerciseIds::from(filter_ids)
+        };
 
+        Page {
+            exercise_ids,
+            js_path: shared::config::WASM_JS_ENDPOINT.into(),
+        }
+    }
+}
+
+pub async fn response(Query(params): Query<Params>) -> impl IntoResponse {
     Response::builder()
         .header("content-type", "text/html")
-        .body(page.render().unwrap())
+        .body(Page::from(params).render().unwrap())
         .unwrap()
 }
 

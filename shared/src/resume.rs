@@ -1,14 +1,4 @@
-use askama::Template;
 use serde::Deserialize;
-
-#[derive(Deserialize, Template)]
-#[template(path = "resume.html")]
-pub struct ResumePage {
-    pub me: Me,
-    pub jobs: Vec<Jobs>,
-    pub awards: Vec<Awards>,
-    pub education: Vec<Education>,
-}
 
 #[derive(Deserialize)]
 pub struct Me {

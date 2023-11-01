@@ -9,7 +9,7 @@ use tower_http::services::ServeDir;
 use tower_livereload::LiveReloadLayer;
 
 async fn style() -> impl IntoResponse {
-    let template_files = utils::get_files_in_dir("shared/templates").unwrap();
+    let template_files = utils::get_files_in_dir("server/templates").unwrap();
 
     Response::builder()
         .header("content-type", "text/css")

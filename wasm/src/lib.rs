@@ -5,46 +5,37 @@ mod shapes;
 mod sketch;
 mod utils;
 
-use crate::ex::intro;
-use crate::ex::vectors;
-use crate::sketch::Render;
-use crate::utils::canvas_context;
 use anyhow::Result;
-use once_cell::sync::Lazy;
-use serde_wasm_bindgen;
-use shared::pages::noc;
-use std::collections::HashMap;
+use ex::{intro, vectors};
+use gloo::console;
+use shared::noc;
+use sketch::Render;
+use std::convert::TryFrom;
+use utils::canvas_context;
 use wasm_bindgen::prelude::*;
-use web_sys::CanvasRenderingContext2d;
-
-type RenderFn = fn(CanvasRenderingContext2d) -> Result<(), anyhow::Error>;
-static RENDER: Lazy<Vec<(&'static str, RenderFn)>> = Lazy::new(|| {
-    vec![
-        ("0.1", intro::Ex1::render),
-        ("0.2", intro::Ex2::render),
-        ("0.3", intro::Ex3::render),
-        ("0.4", intro::Ex4::render),
-        ("0.5", intro::Ex5::render),
-        ("0.6", intro::Ex6::render),
-        ("1.1", vectors::Ex1::render),
-    ]
-});
 
 #[allow(dead_code, unused_variables)]
 #[wasm_bindgen]
-pub fn run(wasm_data: JsValue) -> Result<(), JsError> {
+pub fn run(input: JsValue) -> Result<(), JsError> {
     console_error_panic_hook::set_once();
-    let data: noc::Data =
-        serde_wasm_bindgen::from_value(wasm_data).expect("Couldn't deserialize wasm_data.");
 
-    let filter_ids = data.filter_ids;
-    let render_map: HashMap<String, RenderFn> =
-        RENDER.iter().map(|&(id, rf)| (id.to_owned(), rf)).collect();
+    let exercise_ids = noc::ExerciseIds::try_from(input).unwrap();
 
-    for id in filter_ids {
-        match (render_map.get(&id), canvas_context(&id)) {
-            (Some(render_fn), Ok(ctx)) => render_fn(ctx).unwrap(),
-            _ => {}
+    for id in exercise_ids {
+        let ctx = canvas_context(&id).expect(&format!("Couldn't find element with id: {id}"));
+        let result = match id.as_ref() {
+            "0.1" => intro::Ex1::render(ctx),
+            "0.2" => intro::Ex2::render(ctx),
+            "0.3" => intro::Ex3::render(ctx),
+            "0.4" => intro::Ex4::render(ctx),
+            "0.5" => intro::Ex5::render(ctx),
+            "0.6" => intro::Ex6::render(ctx),
+            "1.1" => vectors::Ex1::render(ctx),
+            _ => Err(anyhow::format_err!("No Exercise with id: {id}")),
+        };
+
+        if let Err(error) = result {
+            console::error!(format!("Rendering error: {error:#?}"));
         }
     }
 

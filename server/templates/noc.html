@@ -5,14 +5,14 @@
 {% block head %}
 
 <script type="module">
-  import init, {run} from "{{ crate::config::WASM_JS_ENDPOINT }}"
-  init().then(() => run(JSON.parse(`{{ self|json|safe }}`)))
+  import init, {run} from "{{ shared::config::WASM_JS_ENDPOINT }}"
+  init().then(() => run(JSON.parse(`{{ exercise_ids|json|safe }}`)))
 </script>
 {% endblock %}
 
 {% block body %}
 <div class="space-y-8">
-  {% for id in filter_ids %}
+  {% for id in exercise_ids %}
   <div class="space-y-2">
     <h3 class="font-bold text-gray-800">Exercise {{ id }}</h3>
     <canvas id="{{ id }}" width="500" height="500"></canvas>
