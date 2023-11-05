@@ -5,7 +5,7 @@
 {% block head %}
 
 <script type="module">
-  import init, {run} from "{{ shared::config::WASM_JS_ENDPOINT }}"
+  import init, {run} from "{{ js_path }}"
   init().then(() => run(JSON.parse(`{{ exercise_ids|json|safe }}`)))
 </script>
 {% endblock %}

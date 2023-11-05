@@ -1,9 +1,9 @@
+use crate::state::AppState;
 use crate::utils;
-use askama::Template;
-use axum::{http::Response, response::IntoResponse};
+use askama_axum::Template;
+use axum::extract::State;
 use serde::Deserialize;
 use shared::resume::{Awards, Education, Jobs, Me};
-use std::error::Error;
 
 #[derive(Deserialize, Template)]
 #[template(path = "resume.html")]
@@ -14,19 +14,6 @@ pub struct Page {
     pub education: Vec<Education>,
 }
 
-impl TryFrom<&str> for Page {
-    type Error = Box<dyn Error>;
-
-    fn try_from(file_path: &str) -> Result<Self, Self::Error> {
-        utils::parse_toml::<Page>(file_path)
-    }
-}
-
-pub async fn response() -> impl IntoResponse {
-    let page = Page::try_from("server/data/data.toml").unwrap();
-
-    Response::builder()
-        .header("content-type", "text/html")
-        .body(page.render().unwrap())
-        .unwrap()
+pub async fn response(State(state): State<AppState>) -> Page {
+    utils::parse_toml(&state.config.resume_toml_path).expect("error parsing resume toml")
 }

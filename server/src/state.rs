@@ -1,5 +1,6 @@
-use std::sync::Mutex;
+use shared::Config;
 
+#[derive(Clone)]
 pub struct AppState {
-    pub count: Mutex<i32>,
+    pub config: Config,
 }
