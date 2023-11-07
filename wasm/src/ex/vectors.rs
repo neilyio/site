@@ -1,8 +1,7 @@
 use crate::{
     shapes::{self, Drawer},
-    sketch::{Render, Sketch},
+    sketch::{Render, Sketch, WebCanvas},
 };
-use web_sys::CanvasRenderingContext2d;
 
 pub struct Ex1 {
     width: usize,
@@ -14,10 +13,9 @@ pub struct Ex1 {
 }
 
 impl Render for Ex1 {}
-impl Sketch<CanvasRenderingContext2d> for Ex1 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> std::result::Result<Self, anyhow::Error> {
-        let width = ctx.canvas().unwrap().height() as usize;
-        let height = ctx.canvas().unwrap().width() as usize;
+impl Sketch<WebCanvas> for Ex1 {
+    async fn setup(ctx: &WebCanvas) -> std::result::Result<Self, anyhow::Error> {
+        let (width, height) = ctx.wh();
 
         let ball = shapes::Dot {
             x: width as i32 / 2,
@@ -38,8 +36,8 @@ impl Sketch<CanvasRenderingContext2d> for Ex1 {
         ball.draw(&ctx).unwrap();
 
         Ok(Self {
-            width,
-            height,
+            width: width as usize,
+            height: height as usize,
             xspeed,
             yspeed,
             ball,
@@ -47,10 +45,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex1 {
         })
     }
 
-    async fn cycle(
-        &mut self,
-        ctx: &CanvasRenderingContext2d,
-    ) -> std::result::Result<bool, anyhow::Error> {
+    async fn cycle(&mut self, ctx: &WebCanvas) -> std::result::Result<bool, anyhow::Error> {
         self.ball.x += self.xspeed as i32;
         self.ball.y += self.yspeed as i32;
 

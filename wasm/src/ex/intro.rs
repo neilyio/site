@@ -1,5 +1,6 @@
 use crate::shapes::Drawer;
 use crate::shapes::{self, Dot};
+use crate::sketch::WebCanvas;
 use crate::sketch::{Render, Sketch};
 use anyhow::Result;
 use noise::{NoiseFn, Perlin};
@@ -9,7 +10,7 @@ use rand::{thread_rng, Rng};
 use rand_distr::StandardNormal;
 use reqwest;
 use wasm_bindgen::Clamped;
-use web_sys::{CanvasRenderingContext2d, ImageData};
+use web_sys::ImageData;
 
 pub struct Ex1 {
     dot: Dot,
@@ -17,10 +18,9 @@ pub struct Ex1 {
 }
 
 impl Render for Ex1 {}
-impl Sketch<CanvasRenderingContext2d> for Ex1 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> Result<Self, anyhow::Error> {
-        let width = ctx.canvas().unwrap().width();
-        let height = ctx.canvas().unwrap().height();
+impl Sketch<WebCanvas> for Ex1 {
+    async fn setup(ctx: &WebCanvas) -> Result<Self, anyhow::Error> {
+        let (width, height) = ctx.wh();
         let rng = thread_rng();
 
         let dot = shapes::DotBuilder::default()
@@ -40,14 +40,14 @@ impl Sketch<CanvasRenderingContext2d> for Ex1 {
         Ok(Self { dot, rng })
     }
 
-    async fn cycle(&mut self, ctx: &CanvasRenderingContext2d) -> Result<bool, anyhow::Error> {
+    async fn cycle(&mut self, ctx: &WebCanvas) -> Result<bool, anyhow::Error> {
         let d = 4; // Step size.
 
         for _ in 0..20 {
             // To step in any direction, including diagonal:
             self.dot.x += self.rng.gen_range(-1..2) * d;
             self.dot.y += self.rng.gen_range(-1..2) * d;
-            self.dot.draw(&ctx).unwrap();
+            self.dot.draw(ctx).unwrap();
         }
 
         Ok(true)
@@ -62,17 +62,16 @@ pub struct Ex2 {
 }
 
 impl Render for Ex2 {}
-impl Sketch<CanvasRenderingContext2d> for Ex2 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> Result<Self, anyhow::Error> {
+impl Sketch<WebCanvas> for Ex2 {
+    async fn setup(ctx: &WebCanvas) -> Result<Self, anyhow::Error> {
         let numbers = [0; 20];
         let rnd = thread_rng();
-        let width = ctx.canvas().unwrap().width();
-        let height = ctx.canvas().unwrap().height();
+        let (width, height) = ctx.wh();
 
         let bg = shapes::Background {
             color: "honeydew".to_string(),
         };
-        bg.draw(&ctx).unwrap();
+        bg.draw(ctx).unwrap();
 
         Ok(Self {
             numbers,
@@ -82,7 +81,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex2 {
         })
     }
 
-    async fn cycle(&mut self, ctx: &CanvasRenderingContext2d) -> Result<bool, anyhow::Error> {
+    async fn cycle(&mut self, ctx: &WebCanvas) -> Result<bool, anyhow::Error> {
         // Increment a random number in the list.
         let index = self.rnd.gen_range(0..self.numbers.len());
         self.numbers[index] += 1;
@@ -101,7 +100,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex2 {
                 .build()
                 .unwrap();
 
-            rect.draw(&ctx).unwrap();
+            rect.draw(ctx).unwrap();
         }
 
         Ok(true)
@@ -115,10 +114,9 @@ pub struct Ex3 {
 }
 
 impl Render for Ex3 {}
-impl Sketch<CanvasRenderingContext2d> for Ex3 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> Result<Self, anyhow::Error> {
-        let width = ctx.canvas().unwrap().width();
-        let height = ctx.canvas().unwrap().height();
+impl Sketch<WebCanvas> for Ex3 {
+    async fn setup(ctx: &WebCanvas) -> Result<Self, anyhow::Error> {
+        let (width, height) = ctx.wh();
 
         let dot = shapes::DotBuilder::default()
             .x(width as i32 / 2)
@@ -134,12 +132,12 @@ impl Sketch<CanvasRenderingContext2d> for Ex3 {
         let bg = shapes::Background {
             color: "honeydew".to_string(),
         };
-        bg.draw(&ctx).unwrap();
+        bg.draw(ctx).unwrap();
 
         Ok(Self { dot, rng, dist })
     }
 
-    async fn cycle(&mut self, ctx: &CanvasRenderingContext2d) -> Result<bool, anyhow::Error> {
+    async fn cycle(&mut self, ctx: &WebCanvas) -> Result<bool, anyhow::Error> {
         for _ in 0..10 {
             match self.dist.sample(&mut self.rng) {
                 0 => self.dot.x += 1,
@@ -148,7 +146,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex3 {
                 _ => self.dot.y -= 1,
             }
 
-            self.dot.draw(&ctx).unwrap();
+            self.dot.draw(ctx).unwrap();
         }
 
         Ok(true)
@@ -162,22 +160,21 @@ pub struct Ex4 {
 }
 
 impl Render for Ex4 {}
-impl Sketch<CanvasRenderingContext2d> for Ex4 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> Result<Self, anyhow::Error> {
-        let width = ctx.canvas().unwrap().width();
-        let height = ctx.canvas().unwrap().height();
+impl Sketch<WebCanvas> for Ex4 {
+    async fn setup(ctx: &WebCanvas) -> Result<Self, anyhow::Error> {
+        let (width, height) = ctx.wh();
 
         let rng = rand::thread_rng();
 
         let bg = shapes::Background {
             color: "honeydew".to_string(),
         };
-        bg.draw(&ctx).unwrap();
+        bg.draw(ctx).unwrap();
 
         Ok(Self { rng, width, height })
     }
 
-    async fn cycle(&mut self, ctx: &CanvasRenderingContext2d) -> Result<bool, anyhow::Error> {
+    async fn cycle(&mut self, ctx: &WebCanvas) -> Result<bool, anyhow::Error> {
         let num: f64 = self.rng.sample(StandardNormal);
         let sd = 60.0;
         let mean = self.width as f64 / 2.0;
@@ -192,7 +189,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex4 {
             .build()
             .unwrap();
 
-        dot.draw(&ctx).unwrap();
+        dot.draw(ctx).unwrap();
 
         Ok(true)
     }
@@ -206,10 +203,9 @@ pub struct Ex5 {
 }
 
 impl Render for Ex5 {}
-impl Sketch<CanvasRenderingContext2d> for Ex5 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> Result<Self, anyhow::Error> {
-        let width = ctx.canvas().unwrap().width();
-        let height = ctx.canvas().unwrap().height();
+impl Sketch<WebCanvas> for Ex5 {
+    async fn setup(ctx: &WebCanvas) -> Result<Self, anyhow::Error> {
+        let (width, height) = ctx.wh();
         let perlin = Perlin::new(0);
         let offset = 0.0;
         let x = (width / 2) as f64;
@@ -218,7 +214,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex5 {
         let bg = shapes::Background {
             color: "honeydew".to_string(),
         };
-        bg.draw(&ctx).unwrap();
+        bg.draw(ctx).unwrap();
 
         Ok(Self {
             perlin,
@@ -228,11 +224,12 @@ impl Sketch<CanvasRenderingContext2d> for Ex5 {
         })
     }
 
-    async fn cycle(&mut self, ctx: &CanvasRenderingContext2d) -> Result<bool, anyhow::Error> {
+    async fn cycle(&mut self, ctx: &WebCanvas) -> Result<bool, anyhow::Error> {
         let bg = shapes::Background {
             color: "honeydew".to_string(),
         };
-        bg.draw(&ctx).unwrap();
+
+        bg.draw(ctx).unwrap();
 
         let scale = 0.02;
         let amplitude = 10.0;
@@ -247,7 +244,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex5 {
             .build()
             .unwrap();
 
-        dot.draw(&ctx).unwrap();
+        dot.draw(ctx).unwrap();
 
         self.offset += 1.0;
         Ok(true)
@@ -257,10 +254,9 @@ impl Sketch<CanvasRenderingContext2d> for Ex5 {
 pub struct Ex6 {}
 
 impl Render for Ex6 {}
-impl Sketch<CanvasRenderingContext2d> for Ex6 {
-    async fn setup(ctx: &CanvasRenderingContext2d) -> Result<Self, anyhow::Error> {
-        let width = ctx.canvas().unwrap().width() as usize;
-        let height = ctx.canvas().unwrap().height() as usize;
+impl Sketch<WebCanvas> for Ex6 {
+    async fn setup(ctx: &WebCanvas) -> Result<Self, anyhow::Error> {
+        let (width, height) = ctx.wh();
 
         // Fetching data from /perlin2d
         let url = format!(
@@ -277,7 +273,7 @@ impl Sketch<CanvasRenderingContext2d> for Ex6 {
             height as u32,
         )
         .unwrap();
-        ctx.put_image_data(&new_image, 0.0, 0.0).unwrap();
+        ctx.ctx().put_image_data(&new_image, 0.0, 0.0).unwrap();
 
         Ok(Self {})
     }

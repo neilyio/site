@@ -1,6 +1,6 @@
+use crate::sketch::WebCanvas;
 use derive_builder::Builder;
 use wasm_bindgen::JsValue;
-use web_sys::CanvasRenderingContext2d;
 
 pub trait Drawer<T> {
     type Result;
@@ -19,10 +19,11 @@ pub struct Dot {
     pub opacity: f64,
 }
 
-impl Drawer<&CanvasRenderingContext2d> for Dot {
+impl Drawer<&WebCanvas> for Dot {
     type Result = Result<(), JsValue>;
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) -> Self::Result {
+    fn draw(&self, ctx: &WebCanvas) -> Self::Result {
+        let ctx = ctx.ctx();
         // Set the fill color
         ctx.set_fill_style(&self.color.clone().into());
 
@@ -53,16 +54,16 @@ pub struct Background {
     pub color: String,
 }
 
-impl Drawer<&CanvasRenderingContext2d> for Background {
+impl Drawer<&WebCanvas> for Background {
     type Result = Result<(), JsValue>;
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) -> Self::Result {
-        let width = ctx.canvas().unwrap().width() as f64;
-        let height = ctx.canvas().unwrap().height() as f64;
+    fn draw(&self, ctx: &WebCanvas) -> Self::Result {
+        let (width, height) = ctx.wh();
+        let ctx = ctx.ctx();
 
         // Draw a rectangle
         ctx.set_fill_style(&self.color.clone().into());
-        ctx.fill_rect(0.0, 0.0, width, height);
+        ctx.fill_rect(0.0, 0.0, width as f64, height as f64);
 
         Ok(())
     }
@@ -81,10 +82,11 @@ pub struct Rectangle {
     pub border_color: String,
 }
 
-impl Drawer<&CanvasRenderingContext2d> for Rectangle {
+impl Drawer<&WebCanvas> for Rectangle {
     type Result = Result<(), JsValue>;
 
-    fn draw(&self, ctx: &CanvasRenderingContext2d) -> Self::Result {
+    fn draw(&self, ctx: &WebCanvas) -> Self::Result {
+        let ctx = ctx.ctx();
         ctx.set_fill_style(&self.color.clone().into());
         ctx.fill_rect(
             self.x as f64,

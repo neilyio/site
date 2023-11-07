@@ -12,8 +12,8 @@ pub trait Sketch<T> {
     }
 }
 
-pub trait Render: Sketch<CanvasRenderingContext2d> {
-    fn render(ctx: CanvasRenderingContext2d) -> Result<(), anyhow::Error>
+pub trait Render: Sketch<WebCanvas> {
+    fn render(ctx: WebCanvas) -> Result<(), anyhow::Error>
     where
         Self: Sized,
     {
@@ -32,5 +32,35 @@ pub trait Render: Sketch<CanvasRenderingContext2d> {
         });
 
         Ok(())
+    }
+}
+
+pub struct WebCanvas {
+    ctx: CanvasRenderingContext2d,
+}
+
+impl WebCanvas {
+    pub fn new(ctx: CanvasRenderingContext2d) -> Self {
+        Self { ctx }
+    }
+
+    pub fn width(&self) -> u32 {
+        self.canvas().width()
+    }
+
+    pub fn height(&self) -> u32 {
+        self.canvas().height()
+    }
+
+    pub fn wh(&self) -> (u32, u32) {
+        (self.width(), self.height())
+    }
+
+    pub fn canvas(&self) -> web_sys::HtmlCanvasElement {
+        self.ctx.canvas().unwrap()
+    }
+
+    pub fn ctx(&self) -> &CanvasRenderingContext2d {
+        &self.ctx
     }
 }
